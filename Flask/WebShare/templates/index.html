@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>Web Share File</title>
+    </head>
+    <body>
+        <form action="/" method="POST" enctype="multipart/form-data">
+            <input type="file" name="file" id="file" class="file"/>
+            <input type="submit" name="submit" id="submit" value="Enviar"/>
+        </form>
+        <hr/>
+        <ol>
+            {% for f in files %}
+                <li><a href="{{ f }}">{{ f }}</a></li>
+            {% endfor %}
+        </ol>
+    </body>
+</html>
