@@ -1,48 +1,39 @@
-'''
-    WebShare
-
-    Copyright (C) 2021 Luciano A.
-
-    WebShare is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    WebShare program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with WebShare.  If not, see <https://www.gnu.org/licenses/>.
-'''
-""" 
-    TLDR; i need to share files over LAN
-"""
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 import os
-import sys
-from flask import Flask,request,abort,render_template,send_file
+from base64 import  *
+
+from flask import Flask,request,abort,render_template,send_file,flash
+from werkzeug.utils import secure_filename
 
 app=Flask(__name__)
 
+PATH="/tmp/files/"
+
 @app.route('/',methods=['GET','POST'])
 def index():
+    if not os.path.exists(PATH):
+        os.mkdir(PATH,mode=511)
+        
     if request.method == 'POST':
-        f=request.files['file']
-        f.save(f.filename)
+        if "upload" in request.files:
+            f=request.files['upload']
+            fname=secure_filename(f.filename)
+            f.save(os.path.join(PATH,fname))
+    
+    
 
-    files=[ f.decode('utf-8') for f in os.listdir('.') ]
-    for f in ['templates','app.py','app.pyc']:
-        files.remove(f)
+    files=[ f for f in os.listdir(PATH) if f not in ['.','..']  ]
 
     return render_template('index.html',files=files )
 
 
 @app.route('/<filename>')
 def sendfile(filename):
-    return send_file(open(filename,'rb'),mimetype="")
-    
 
-app.run(host='0.0.0.0')
+    f=open(os.path.join(PATH,filename) ,"rb")
+    
+    return send_file(f,mimetype="") 
+    
 
