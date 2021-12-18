@@ -1,5 +1,10 @@
 TLDR; i need share files over the LAN
 
-export FLASK_APP=app.py
 
-python -mflask run
+git clone github.com/admred/PYTHON
+
+cd PYTHON/WebShare
+
+export FLASK_APP=app
+
+python3 -mflask run --host=0.0.0.0
